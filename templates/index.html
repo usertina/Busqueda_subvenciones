@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block title %}SubvencionesFinder - Encuentra subvenciones reales para tu empresa{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="hero-section text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-search-dollar text-primary me-3"></i>
+                    Encuentra Subvenciones Reales
+                </h1>
+                <p class="lead mb-4">
+                    Búsqueda en tiempo real usando <strong>APIs oficiales</strong> del BOE, 
+                    Comisión Europea, CDTI e IDAE. Datos actualizados y verificados.
+                </p>
+                <div class="api-status-indicator mx-auto mb-4">
+                    <span class="api-status-dot"></span>
+                    <span>APIs oficiales activas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 fade-in-up" style="animation-delay: 0.2s;">
+                <div class="card-header text-center">
+                    <h2 class="mb-1">
+                        <i class="fas fa-filter me-2"></i>
+                        Configurar Búsqueda
+                    </h2>
+                    <p class="subtitle mb-0">Define los criterios para encontrar las subvenciones más relevantes</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form action="{{ url_for('main.search_grants') }}" method="POST" id="searchForm">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="form-floating-modern">
+                                    <select class="form-select" id="sector" name="sector" required>
+                                        <option value="" disabled selected>Selecciona...</option>
+                                        <option value="Todos">🌐 Todos los sectores</option>
+                                        <option value="Tecnología">💻 Tecnología</option>
+                                        <option value="Energía">⚡ Energía</option>
+                                        <option value="Comercio">🛒 Comercio</option>
+                                        <option value="Industria">🏭 Industria</option>
+                                        <option value="Agricultura">🌱 Agricultura</option>
+                                        <option value="Servicios">🔧 Servicios</option>
+                                        <option value="Construcción">🏗️ Construcción</option>
+                                        <option value="Salud">⚕️ Salud</option>
+                                        <option value="Turismo">✈️ Turismo</option>
+                                        <option value="Educación">🎓 Educación</option>
+                                        <option value="Transporte">🚛 Transporte</option>
+                                    </select>
+                                    <label for="sector">
+                                        <i class="fas fa-industry me-2"></i>
+                                        Sector de la empresa
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-floating-modern">
+                                    <select class="form-select" id="location" name="location" required>
+                                        <option value="" disabled selected>Selecciona...</option>
+                                        <option value="Todas">🌍 Todas</option>
+                                        <option value="España">🇪🇸 España</option>
+                                        <option value="UE">🇪🇺 Unión Europea</option>
+                                        <option value="Internacional">🌎 Internacional</option>
+                                    </select>
+                                    <label for="location"><i class="fas fa-map-marker-alt me-2"></i>Ubicación</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-floating-modern">
+                                    <select class="form-select" id="company_type" name="company_type" required>
+                                        <option value="" disabled selected>Selecciona...</option>
+                                        <option value="Todos">🏢 Todos los tipos</option>
+                                        <option value="PYME">🏪 PYME</option>
+                                        <option value="Startup">🚀 Startup</option>
+                                        <option value="Autónomo">👤 Autónomo</option>
+                                        <option value="Microempresa">🏬 Microempresa</option>
+                                        <option value="Grande empresa">🏢 Gran empresa</option>
+                                        <option value="ONG">🤝 ONG</option>
+                                        <option value="Universidad">🎓 Universidad</option>
+                                        <option value="Centro de investigación">🔬 Centro I+D</option>
+                                    </select>
+                                    <label for="company_type">
+                                        <i class="fas fa-building me-2"></i>
+                                        Tipo de organización
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mt-2" id="regionContainer" style="display: none; transition: all 0.3s ease;">
+                            <div class="col-md-4">
+                                <div class="form-floating-modern">
+                                    <select class="form-select" id="region" name="region">
+                                        <option value="Todas">🏛️ Todas las CCAA</option>
+                                        <option value="Andalucía">🌞 Andalucía</option>
+                                        <option value="Cataluña">🏛️ Cataluña</option>
+                                        <option value="Madrid">🏢 Madrid</option>
+                                        <option value="Valencia">🍊 Valencia</option>
+                                        <option value="Galicia">🐚 Galicia</option>
+                                        <option value="País Vasco">⛰️ País Vasco</option>
+                                        <option value="Aragón">🏔️ Aragón</option>
+                                        <option value="Asturias">🌲 Asturias</option>
+                                        <option value="Cantabria">🌊 Cantabria</option>
+                                        <option value="Castilla-La Mancha">🌾 Castilla-La Mancha</option>
+                                        <option value="Castilla y León">🏰 Castilla y León</option>
+                                        <option value="Extremadura">🦎 Extremadura</option>
+                                        <option value="Islas Baleares">🏖️ Islas Baleares</option>
+                                        <option value="Canarias">🌺 Canarias</option>
+                                        <option value="La Rioja">🍇 La Rioja</option>
+                                        <option value="Murcia">🌶️ Murcia</option>
+                                        <option value="Navarra">🌿 Navarra</option>
+                                        <option value="Ceuta">🌍 Ceuta</option>
+                                        <option value="Melilla">🌍 Melilla</option>
+                                    </select>
+                                    <label for="region">
+                                        <i class="fas fa-map me-2"></i>
+                                        Comunidad Autónoma
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <div class="alert alert-info mb-0 d-flex align-items-center">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <small>
+                                        <strong>Opcional:</strong> Filtra por Comunidad Autónoma para obtener subvenciones específicas de tu región.
+                                        Dejar en "Todas las CCAA" incluirá subvenciones nacionales y autonómicas.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-secondary btn-lg px-5" disabled>
+                                <i class="fas fa-search me-2"></i>
+                                Buscar Subvenciones
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
+            <div class="feature-card text-center">
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h5>Tiempo Real</h5>
+                <p class="text-muted mb-0">
+                    Consulta directa a APIs oficiales. Datos actualizados al momento de la búsqueda.
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
+            <div class="feature-card text-center">
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5>Fuentes Oficiales</h5>
+                <p class="text-muted mb-0">
+                    BOE, Comisión Europea, CDTI, IDAE. Solo información verificada y oficial.
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.5s;">
+            <div class="feature-card text-center">
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-sort-amount-down"></i>
+                </div>
+                <h5>Ordenación Inteligente</h5>
+                <p class="text-muted mb-0">
+                    Resultados ordenados por fecha de publicación. Las más recientes primero.
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.6s;">
+            <div class="feature-card text-center">
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h5>Exportación</h5>
+                <p class="text-muted mb-0">
+                    Exporta resultados en JSON, CSV y Excel para análisis posterior.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 mb-5 fade-in-up" style="animation-delay: 0.7s;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="mb-3">
+                        <i class="fas fa-cogs text-primary me-2"></i>
+                        ¿Cómo funciona?
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    1
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Configura tu búsqueda</h6>
+                                    <p class="text-muted small mb-0">Selecciona sector, ubicación y tipo de organización</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    2
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Consulta automática</h6>
+                                    <p class="text-muted small mb-0">Buscamos en tiempo real en todas las fuentes oficiales</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    3
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Resultados ordenados</h6>
+                                    <p class="text-muted small mb-0">Ver subvenciones ordenadas por fecha de publicación</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    4
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Acceso directo</h6>
+                                    <p class="text-muted small mb-0">Enlaces directos a la documentación oficial</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 text-center">
+                    <div class="bg-light rounded p-4">
+                        <i class="fas fa-rocket fa-3x text-primary mb-3"></i>
+                        <h5>Prueba una búsqueda</h5>
+                        <p class="text-muted small">
+                            Las búsquedas suelen tardar 5-15 segundos mientras consultamos las APIs oficiales
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 fade-in-up" style="animation-delay: 0.8s;">
+        <div class="card-header bg-transparent border-bottom">
+            <h4 class="mb-0">
+                <i class="fas fa-database text-primary me-2"></i>
+                Fuentes de Datos Oficiales
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-start p-3 bg-light rounded">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">BOE - Boletín Oficial del Estado</h6>
+                            <p class="text-muted small mb-1">API oficial para convocatorias y subvenciones publicadas</p>
+                            <span class="badge bg-success">API Directa</span>
+                            <span class="badge bg-info">España</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-start p-3 bg-light rounded">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="fas fa-flag"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">EU Funding & Tenders Portal</h6>
+                            <p class="text-muted small mb-1">Portal único de financiación de la Comisión Europea</p>
+                            <span class="badge bg-success">API REST</span>
+                            <span class="badge bg-info">UE</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-start p-3 bg-light rounded">
+                        <div class="flex-shrink-0">
+                            <div class="bg-secondary text-white rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">CDTI</h6>
+                            <p class="text-muted small mb-1">Centro para el Desarrollo Tecnológico Industrial</p>
+                            <span class="badge bg-warning">Web Scraping</span>
+                            <span class="badge bg-info">I+D+i</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-start p-3 bg-light rounded">
+                        <div class="flex-shrink-0">
+                            <div class="bg-secondary text-white rounded d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">IDAE</h6>
+                            <p class="text-muted small mb-1">Instituto para la Diversificación y Ahorro de la Energía</p>
+                            <span class="badge bg-warning">Web Scraping</span>
+                            <span class="badge bg-info">Energía</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4 mb-0">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-info-circle me-2 mt-1"></i>
+                    <div>
+                        <p class="mb-2"><strong>Ventajas de usar APIs oficiales:</strong></p>
+                        <ul class="mb-0 small">
+                            <li>Datos siempre actualizados y verificados</li>
+                            <li>Acceso directo a la fuente oficial</li>
+                            <li>Información completa y detallada</li>
+                            <li>Sin intermediarios ni filtros adicionales</li>
+                            <li>Ordenación cronológica automática (más recientes primero)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
