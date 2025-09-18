@@ -111,24 +111,38 @@ class RealGrantAPI:
     
     def _process_results(self, grants: List[Dict], sector: str, location: str, company_type: str, region: str) -> List[Dict]:
         """Procesa y ordena resultados por fecha de publicación (más recientes primero)."""
+        
+        # Deduplicar por un ID único para evitar perder resultados con títulos similares
         unique_grants = []
-        seen_titles = set()
+        seen_ids = set()
         
         for grant in grants:
-            title_normalized = re.sub(r'\W+', '', grant.get('title', '').lower())
-            if title_normalized not in seen_titles and len(title_normalized) > 10:
-                seen_titles.add(title_normalized)
+            # Creamos un identificador único combinando la fuente y un ID interno
+            source = grant.get('source', 'NO_SOURCE')
+            identifier = grant.get('identifier', 'NO_ID')
+            
+            if identifier == 'NO_ID' or len(identifier) <= 3:
+                # Si no hay ID válido, usamos el título normalizado
+                title_normalized = re.sub(r'\W+', '', grant.get('title', 'NO_TITLE').lower())
+                unique_id = f"{source}_{title_normalized}"
+            else:
+                unique_id = f"{source}_{identifier}"
+            
+            if unique_id not in seen_ids:
+                seen_ids.add(unique_id)
                 unique_grants.append(grant)
         
+        # Ordenar por fecha de publicación (más recientes primero)
         def get_publication_date(grant):
             try:
-                pub_date = grant.get('publication_date', '2025-01-01')
+                pub_date = grant.get('publication_date', '1900-01-01')
                 return datetime.datetime.strptime(pub_date, '%Y-%m-%d')
-            except:
-                return datetime.datetime(2025, 1, 1)
+            except (ValueError, TypeError):
+                return datetime.datetime(1900, 1, 1)
         
         unique_grants.sort(key=get_publication_date, reverse=True)
         
+        # Limitar resultados
         return unique_grants[:25]
     
     def _get_fallback_data(self) -> List[Dict]:

@@ -5,7 +5,7 @@ import json
 import os
 from flask import Blueprint, request, jsonify, send_file
 from services.grants import process_grants_data
-from scraper.api_client import RealGrantAPI
+from scraper.api_client import RealGrantAPI  # <-- Línea corregida
 
 # Detectar disponibilidad de pandas
 try:
