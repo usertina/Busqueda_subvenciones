@@ -88,7 +88,7 @@ class RealGrantAPI:
             
             # 3. Scraping CDTI
             self.logger.info("Consultando web del CDTI...")
-            cdti_web = cdti.CdtisScraper(self.session, self.apis['cdti_web'], self.spanish_regions, self.logger)
+            cdti_web = cdti.CdtiScraper(self.session, self.apis['cdti_web'], self.spanish_regions, self.logger)
             all_grants.extend(cdti_web.search(sector, company_type, region))
             
             # 4. Scraping IDAE
